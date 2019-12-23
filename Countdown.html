@@ -1,0 +1,104 @@
+<!-- Countdown 倒计时效果 -->
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,  initial-scale=1">
+	<title></title>
+</head>
+<body>
+	<div id="app">
+		<div class='jishi' v-for="(item,index) in paytime" :key='index'>
+			{{item.days}}天{{item.hours}}:{{item.mintus}}:{{item.seconds}}
+		</div>
+	</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script type="text/javascript">
+		var app = new Vue({
+			el: '#app',
+			data: {
+				paytime: [{
+					date: '2019-12-25 13:12:14'
+				}, {
+					date: '2020-12-23 13:12:14'
+				}, {
+					date: '2020-12-23 13:15:14'
+				}],
+				t: null
+			},
+			mounted() {
+				this.t = setInterval(() => {
+					let nowtime = new Date().getTime()
+					this.paytime.forEach((item, index) => {
+						let result = this.computTime(
+							new Date(item.date.replace(/-/g, "/")).getTime(),
+							nowtime
+						);
+						this.$nextTick(() => {
+							for (let _item in result) {
+								this.$set(
+									this.paytime[index],
+									_item,
+									result[_item].toString().length < 2 ?
+									"0" + result[_item].toString() :
+									result[_item]
+								);
+							}
+						});
+					})
+				}, 1000)
+			},
+			methods: {
+				computTime(endTime, currentTime) {
+					let lastTime = parseInt(endTime / 1000 - currentTime / 1000),
+						result = {}
+					result.days = parseInt(lastTime / (24 * 60 * 60)) //秒数处以24*60*60，算出天数
+					lastTime -= result.days * 24 * 60 * 60; // 剩下的时间 - 天数占了多少s = 小时+分钟+毫秒的时间
+					result.hours = parseInt(lastTime / (60 * 60))
+					lastTime -= result.hours * 60 * 60; //剩下的时间 - 小时的s数 =  分钟+seconds
+					result.mintus = parseInt(lastTime / 60)
+					lastTime -= result.mintus * 60;
+					result.seconds = lastTime;
+					return result
+				}
+			},
+			destroyed() {
+				clearInterval(this.t)
+			}
+		})
+	</script>
+	<style type="text/css">
+		* {
+			margin: 0px;
+			padding: 0px;
+			list-style: none;
+		}
+
+		html,
+		body {
+			padding: 0;
+			margin: 0;
+		}
+
+		.new-carousel {
+			height: 50px;
+			line-height: 50px;
+			width: 200px;
+			margin: 50px auto;
+			position: relative;
+			overflow: hidden;
+			border-bottom: 1px solid #e6e6e6;
+			border-top: 1px solid #e6e6e6;
+		}
+
+		.new-carousel-div {
+			position: absolute;
+			transition: .5s;
+			top: 0px;
+		}
+
+		.new-carousel-item {
+			display: block;
+		}
+	</style>
+</body>
+</html>
